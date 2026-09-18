@@ -11,6 +11,11 @@ export function Navbar() {
           Marketplace
         </Link>
         <nav className="flex items-center gap-4 text-sm">
+          {user && (
+            <Link to="/cart" className="text-ink/70 hover:text-ink">
+              Cart
+            </Link>
+          )}
           {user ? (
             <>
               <span className="text-ink/60">Hi, {user.name.split(' ')[0]}</span>

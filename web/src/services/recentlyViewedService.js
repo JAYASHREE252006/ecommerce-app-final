@@ -34,21 +34,6 @@ export const productService = {
   },
 };
 
-export const cartService = {
-  async get() {
-    const res = await api.get('/cart');
-    return res.data.data.items;
-  },
-  async add(productId, quantity = 1) {
-    const res = await api.post('/cart', { productId, quantity });
-    return res.data.data.items;
-  },
-  async remove(productId) {
-    const res = await api.delete(`/cart/${productId}`);
-    return res.data.data.items;
-  },
-};
-
 export const wishlistService = {
   async get() {
     const res = await api.get('/wishlist');

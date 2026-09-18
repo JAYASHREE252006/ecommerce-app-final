@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { cartService, wishlistService } from '../../services/recentlyViewedService';
+import { cartService } from '../../services/cartService';
+import { wishlistService } from '../../services/recentlyViewedService';
 import { useAuth } from '../../context/AuthContext';
 
 export function ProductCard({ product, onChanged }) {

@@ -5,7 +5,7 @@ const { asyncHandler, ApiError, ok } = require('../utils/apiHelpers');
 // Fields the frontend actually needs for cards/listings - keeps payloads small
 // and avoids leaking internal-only fields.
 const PUBLIC_FIELDS =
-  'name description images price originalPrice category brand rating ratingCount stock isActive createdAt';
+  'name description images price originalPrice category brand rating ratingCount stock variants isActive createdAt';
 
 const listProducts = asyncHandler(async (req, res) => {
   const { category, brand, search, page = 1, limit = 20 } = req.query;

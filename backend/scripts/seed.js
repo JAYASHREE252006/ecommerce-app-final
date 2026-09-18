@@ -13,6 +13,41 @@ const sampleProducts = [
   { name: 'Leather Backpack', category: 'Fashion', brand: 'Urbanite', price: 1999, originalPrice: 2699, stock: 30, rating: 4.4, ratingCount: 77, images: ['https://picsum.photos/seed/backpack/400'] },
   { name: 'Bluetooth Portable Speaker', category: 'Electronics', brand: 'Soundwave', price: 1599, originalPrice: 1999, stock: 0, rating: 3.9, ratingCount: 52, images: ['https://picsum.photos/seed/speaker/400'] },
   { name: 'Espresso Machine, Compact', category: 'Home', brand: 'BrewMaster', price: 8999, originalPrice: 10999, stock: 12, rating: 4.5, ratingCount: 33, images: ['https://picsum.photos/seed/espresso/400'] },
+  {
+    name: 'Classic Cotton T-Shirt',
+    category: 'Fashion',
+    brand: 'Urbanite',
+    price: 599,
+    originalPrice: 799,
+    stock: 0, // ignored - this product uses variants instead
+    rating: 4.3,
+    ratingCount: 210,
+    images: ['https://picsum.photos/seed/tshirt/400'],
+    variants: [
+      { size: 'S', color: 'Black', stock: 20, sku: 'TSHIRT-S-BLK' },
+      { size: 'M', color: 'Black', stock: 15, sku: 'TSHIRT-M-BLK' },
+      { size: 'L', color: 'Black', stock: 0, sku: 'TSHIRT-L-BLK' },
+      { size: 'S', color: 'White', stock: 10, sku: 'TSHIRT-S-WHT' },
+      { size: 'M', color: 'White', stock: 12, sku: 'TSHIRT-M-WHT', priceModifier: 50 },
+    ],
+  },
+  {
+    name: 'Canvas Sneakers',
+    category: 'Footwear',
+    brand: 'Stride',
+    price: 1499,
+    originalPrice: 1899,
+    stock: 0,
+    rating: 4.1,
+    ratingCount: 95,
+    images: ['https://picsum.photos/seed/sneakers/400'],
+    variants: [
+      { size: '7', color: 'Grey', stock: 8, sku: 'SNKR-7-GRY' },
+      { size: '8', color: 'Grey', stock: 5, sku: 'SNKR-8-GRY' },
+      { size: '9', color: 'Grey', stock: 0, sku: 'SNKR-9-GRY' },
+      { size: '8', color: 'Navy', stock: 6, sku: 'SNKR-8-NVY' },
+    ],
+  },
 ];
 
 async function seed() {

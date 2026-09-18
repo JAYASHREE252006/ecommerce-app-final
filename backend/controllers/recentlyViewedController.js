@@ -42,7 +42,7 @@ async function buildRecentlyViewedList(userId, limit = MAX_RECENTLY_VIEWED) {
     Cart.findOne({ user: userId }).select('items').lean(),
   ]);
   const wishlistSet = new Set((wishlist?.products || []).map((id) => id.toString()));
-  const cartSet = new Set((cart?.items || []).map((i) => i.product.toString()));
+  const cartSet = new Set((cart?.items || []).filter((i) => !i.savedForLater).map((i) => i.product.toString()));
 
   return valid.map((a) => ({
     id: a.product._id,
@@ -185,7 +185,7 @@ const getContinueShopping = asyncHandler(async (req, res) => {
     Cart.findOne({ user: req.userId }).select('items').lean(),
   ]);
   const wishlistSet = new Set((wishlist?.products || []).map((id) => id.toString()));
-  const cartSet = new Set((cart?.items || []).map((i) => i.product.toString()));
+  const cartSet = new Set((cart?.items || []).filter((i) => !i.savedForLater).map((i) => i.product.toString()));
 
   const items = activities
     .filter((a) => a.product && !purchasedSet.has(a.product._id.toString()))

@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { Navbar } from './components/Layout/Navbar';
 import { Home } from './pages/Home';
 import { ProductDetails } from './pages/ProductDetails';
+import { CartPage } from './pages/Cart';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 
@@ -25,6 +26,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/products/:productId" element={<ProductDetails />} />
+            <Route path="/cart" element={<CartPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Routes>
