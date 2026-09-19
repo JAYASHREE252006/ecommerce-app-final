@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { cartService } from '../../services/cartService';
 import { wishlistService } from '../../services/recentlyViewedService';
 import { useAuth } from '../../context/AuthContext';
 
 export function ProductCard({ product, onChanged }) {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [cartState, setCartState] = useState(product.isInCart ? 'in_cart' : 'idle');
   const [wishState, setWishState] = useState(product.isWishlisted ? 'saved' : 'idle');
   const [error, setError] = useState('');
@@ -46,6 +48,7 @@ export function ProductCard({ product, onChanged }) {
         setWishState('saved');
       }
       onChanged?.();
+      queryClient.invalidateQueries({ queryKey: ['recommendations', user.id] });
     } catch (err) {
       setError(err.message);
       setWishState(product.isWishlisted ? 'saved' : 'idle');

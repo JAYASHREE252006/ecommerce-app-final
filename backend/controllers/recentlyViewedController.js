@@ -10,16 +10,21 @@ const { emitToUser } = require('../sockets');
 
 const MAX_RECENTLY_VIEWED = parseInt(process.env.RECENTLY_VIEWED_MAX, 10) || 20;
 const MAX_CONTINUE_SHOPPING = parseInt(process.env.CONTINUE_SHOPPING_MAX, 10) || 10;
+// Recommendations use a wider signal window than what's shown in the
+// "Recently Viewed" carousel: we keep up to 50 unique viewed products per
+// user for scoring purposes, while the carousel itself still only ever
+// displays the newest 20 (see buildRecentlyViewedList's default limit).
+const BROWSING_HISTORY_MAX = parseInt(process.env.BROWSING_HISTORY_MAX, 10) || 50;
 
 /**
- * Deletes everything past the newest MAX_RECENTLY_VIEWED activities for a user.
- * Only ever touches the handful of rows beyond the cap (typically 0 or 1),
- * never scans/rewrites the user's whole history.
+ * Deletes everything past the newest BROWSING_HISTORY_MAX activities for a
+ * user. Only ever touches the handful of rows beyond the cap (typically 0
+ * or 1), never scans/rewrites the user's whole history.
  */
 async function trimToLimit(userId) {
   const overflow = await ProductActivity.find({ user: userId, activityType: 'viewed' })
     .sort({ viewedAt: -1 })
-    .skip(MAX_RECENTLY_VIEWED)
+    .skip(BROWSING_HISTORY_MAX)
     .select('_id');
 
   if (overflow.length) {

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { productService } from '../services/recentlyViewedService';
 import { RecentlyViewed } from '../components/RecentlyViewed/RecentlyViewed';
 import { ContinueShopping } from '../components/ContinueShopping/ContinueShopping';
+import { YouMayAlsoLike } from '../components/Recommendations/YouMayAlsoLike';
 import { CardSkeleton } from '../components/Layout/ProductCarouselSection';
 
 export function Home() {
@@ -26,6 +27,7 @@ export function Home() {
 
       <RecentlyViewed />
       <ContinueShopping />
+      <YouMayAlsoLike />
 
       <section className="mx-auto max-w-6xl px-4 py-8">
         <h2 className="mb-4 font-display text-2xl">All products</h2>

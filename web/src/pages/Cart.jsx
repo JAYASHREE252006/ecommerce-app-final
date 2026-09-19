@@ -164,6 +164,9 @@ export function CartPage() {
       }
       await cartService.checkout();
       refresh();
+      // Purchase changes what's excluded from recommendations/continue-shopping.
+      queryClient.invalidateQueries({ queryKey: ['recommendations', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['continueShopping', user?.id] });
       navigate('/');
     } catch (err) {
       setCheckoutError(err.message);

@@ -28,6 +28,7 @@ export function useProductView(productId) {
         .recordView(productId)
         .then(() => {
           queryClient.invalidateQueries({ queryKey: ['recentlyViewed', user.id] });
+          queryClient.invalidateQueries({ queryKey: ['recommendations', user.id] });
         })
         .catch((err) => {
           // Non-fatal: the product page already rendered successfully.
