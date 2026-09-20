@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 export function RegisterScreen({ navigation }) {
   const { register } = useAuth();
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,9 +29,16 @@ export function RegisterScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create an account</Text>
-      <TextInput placeholder="Name" value={name} onChangeText={setName} style={styles.input} />
+      <TextInput
+        placeholder="Name"
+        placeholderTextColor={colors.inkMuted}
+        value={name}
+        onChangeText={setName}
+        style={styles.input}
+      />
       <TextInput
         placeholder="Email"
+        placeholderTextColor={colors.inkMuted}
         autoCapitalize="none"
         keyboardType="email-address"
         value={email}
@@ -37,6 +47,7 @@ export function RegisterScreen({ navigation }) {
       />
       <TextInput
         placeholder="Password (min 6 characters)"
+        placeholderTextColor={colors.inkMuted}
         secureTextEntry
         value={password}
         onChangeText={setPassword}
@@ -50,11 +61,21 @@ export function RegisterScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, justifyContent: 'center', backgroundColor: 'white' },
-  title: { fontSize: 24, fontWeight: '700', marginBottom: 20 },
-  input: { borderWidth: 1, borderColor: '#DDD9CF', borderRadius: 8, padding: 12, marginBottom: 12 },
-  error: { color: '#DC2626', marginBottom: 8 },
-  button: { backgroundColor: '#1B1F23', borderRadius: 999, paddingVertical: 12, alignItems: 'center' },
-  buttonText: { color: 'white', fontWeight: '600' },
-});
+function createStyles(colors) {
+  return StyleSheet.create({
+    container: { flex: 1, padding: 24, justifyContent: 'center', backgroundColor: colors.canvas },
+    title: { fontSize: 24, fontWeight: '700', marginBottom: 20, color: colors.ink },
+    input: {
+      borderWidth: 1,
+      borderColor: colors.line,
+      backgroundColor: colors.surface,
+      color: colors.ink,
+      borderRadius: 8,
+      padding: 12,
+      marginBottom: 12,
+    },
+    error: { color: colors.danger, marginBottom: 8 },
+    button: { backgroundColor: colors.primary, borderRadius: 999, paddingVertical: 12, alignItems: 'center' },
+    buttonText: { color: 'white', fontWeight: '600' },
+  });
+}

@@ -4,10 +4,12 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useContinueShopping } from '../../hooks/useContinueShopping';
 import { useAuth } from '../../context/AuthContext';
 import { ProductCard } from '../ProductCard/ProductCard';
+import { useTheme } from '../../context/ThemeContext';
 
 export function ContinueShopping() {
   const navigation = useNavigation();
   const { user } = useAuth();
+  const { colors } = useTheme();
   const { items, isLoading } = useContinueShopping();
   const queryClient = useQueryClient();
 
@@ -15,7 +17,7 @@ export function ContinueShopping() {
 
   return (
     <View style={styles.section}>
-      <Text style={styles.title}>Continue Shopping</Text>
+      <Text style={[styles.title, { color: colors.ink }]}>Continue Shopping</Text>
       <FlatList
         horizontal
         data={items}

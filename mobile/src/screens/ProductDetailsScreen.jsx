@@ -4,10 +4,13 @@ import { useQuery } from '@tanstack/react-query';
 import { productService, cartService, wishlistService } from '../services/recentlyViewedService';
 import { useProductView } from '../hooks/useProductView';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 export function ProductDetailsScreen({ route }) {
   const { productId } = route.params;
   const { user } = useAuth();
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const [status, setStatus] = useState('');
 
   const { data: product, isLoading, error } = useQuery({
@@ -21,7 +24,7 @@ export function ProductDetailsScreen({ route }) {
   if (isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator />
+        <ActivityIndicator color={colors.teal} />
       </View>
     );
   }
@@ -54,7 +57,7 @@ export function ProductDetailsScreen({ route }) {
   }
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: 'white' }}>
+    <ScrollView style={{ flex: 1, backgroundColor: colors.canvas }}>
       <Image source={{ uri: product.images?.[0] || 'https://placehold.co/600x600' }} style={styles.image} />
       <View style={{ padding: 16 }}>
         <Text style={styles.title}>{product.name}</Text>
@@ -74,7 +77,7 @@ export function ProductDetailsScreen({ route }) {
             <Text style={styles.cartBtnText}>Add to cart</Text>
           </Pressable>
           <Pressable onPress={addToWishlist} style={styles.wishBtn}>
-            <Text>♡ Wishlist</Text>
+            <Text style={{ color: colors.ink }}>♡ Wishlist</Text>
           </Pressable>
         </View>
         {!!status && <Text style={styles.status}>{status}</Text>}
@@ -83,19 +86,21 @@ export function ProductDetailsScreen({ route }) {
   );
 }
 
-const styles = StyleSheet.create({
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  image: { width: '100%', aspectRatio: 1, backgroundColor: '#EEE' },
-  title: { fontSize: 22, fontWeight: '700', color: '#1B1F23' },
-  brand: { color: '#8A8578', marginTop: 2 },
-  priceRow: { flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 10 },
-  price: { fontSize: 20, fontWeight: '700' },
-  originalPrice: { color: '#8A8578', textDecorationLine: 'line-through' },
-  description: { marginTop: 12, color: '#333', lineHeight: 20 },
-  stock: { marginTop: 8, color: '#8A8578', fontSize: 12 },
-  actions: { flexDirection: 'row', gap: 10, marginTop: 16 },
-  cartBtn: { backgroundColor: '#1B1F23', borderRadius: 999, paddingVertical: 10, paddingHorizontal: 20 },
-  cartBtnText: { color: 'white', fontWeight: '600' },
-  wishBtn: { borderWidth: 1, borderColor: '#DDD9CF', borderRadius: 999, paddingVertical: 10, paddingHorizontal: 20 },
-  status: { marginTop: 10, color: '#0B4F44' },
-});
+function createStyles(colors) {
+  return StyleSheet.create({
+    center: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.canvas },
+    image: { width: '100%', aspectRatio: 1, backgroundColor: colors.line },
+    title: { fontSize: 22, fontWeight: '700', color: colors.ink },
+    brand: { color: colors.inkMuted, marginTop: 2 },
+    priceRow: { flexDirection: 'row', alignItems: 'baseline', gap: 8, marginTop: 10 },
+    price: { fontSize: 20, fontWeight: '700', color: colors.ink },
+    originalPrice: { color: colors.inkMuted, textDecorationLine: 'line-through' },
+    description: { marginTop: 12, color: colors.ink, lineHeight: 20 },
+    stock: { marginTop: 8, color: colors.inkMuted, fontSize: 12 },
+    actions: { flexDirection: 'row', gap: 10, marginTop: 16 },
+    cartBtn: { backgroundColor: colors.primary, borderRadius: 999, paddingVertical: 10, paddingHorizontal: 20 },
+    cartBtnText: { color: 'white', fontWeight: '600' },
+    wishBtn: { borderWidth: 1, borderColor: colors.line, borderRadius: 999, paddingVertical: 10, paddingHorizontal: 20 },
+    status: { marginTop: 10, color: colors.tealDark },
+  });
+}

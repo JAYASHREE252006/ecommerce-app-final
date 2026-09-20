@@ -5,9 +5,15 @@ import { productService } from '../services/recentlyViewedService';
 import { RecentlyViewed } from '../components/RecentlyViewed/RecentlyViewed';
 import { ContinueShopping } from '../components/ContinueShopping/ContinueShopping';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+
+const THEME_CYCLE = { light: 'dark', dark: 'system', system: 'light' };
+const THEME_ICON = { light: '☀️', dark: '🌙', system: '🖥️' };
 
 export function HomeScreen({ navigation }) {
   const { user, logout } = useAuth();
+  const { colors, theme, setTheme } = useTheme();
+  const styles = createStyles(colors);
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -24,21 +30,30 @@ export function HomeScreen({ navigation }) {
 
   return (
     <FlatList
-      style={{ flex: 1, backgroundColor: '#F5F6F2' }}
+      style={{ flex: 1, backgroundColor: colors.canvas }}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       ListHeaderComponent={
         <View>
           <View style={styles.header}>
             <Text style={styles.heading}>Marketplace</Text>
-            {user ? (
-              <Pressable onPress={logout}>
-                <Text style={styles.link}>Log out</Text>
+            <View style={styles.headerActions}>
+              <Pressable
+                onPress={() => setTheme(THEME_CYCLE[theme])}
+                style={styles.themeToggle}
+                accessibilityLabel={`Theme: ${theme}. Tap to change.`}
+              >
+                <Text>{THEME_ICON[theme]}</Text>
               </Pressable>
-            ) : (
-              <Pressable onPress={() => navigation.navigate('Login')}>
-                <Text style={styles.link}>Log in</Text>
-              </Pressable>
-            )}
+              {user ? (
+                <Pressable onPress={logout}>
+                  <Text style={styles.link}>Log out</Text>
+                </Pressable>
+              ) : (
+                <Pressable onPress={() => navigation.navigate('Login')}>
+                  <Text style={styles.link}>Log in</Text>
+                </Pressable>
+              )}
+            </View>
           </View>
           <RecentlyViewed />
           <ContinueShopping />
@@ -66,12 +81,25 @@ export function HomeScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16 },
-  heading: { fontSize: 22, fontWeight: '700', color: '#1B1F23' },
-  link: { color: '#0F6B5C', fontWeight: '500' },
-  gridCard: { width: '48%', marginBottom: 20 },
-  gridImage: { width: '100%', aspectRatio: 1, borderRadius: 8, backgroundColor: '#EEE' },
-  gridName: { marginTop: 6, fontSize: 13, color: '#1B1F23' },
-  gridPrice: { fontWeight: '600', marginTop: 2 },
-});
+// Built from the active theme's colors on every render - cheap for an app
+// this size, and means every screen automatically reflects light/dark/system
+// without any component needing its own theme-switching logic.
+function createStyles(colors) {
+  return StyleSheet.create({
+    header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16 },
+    headerActions: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+    themeToggle: {
+      borderWidth: 1,
+      borderColor: colors.line,
+      borderRadius: 999,
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+    },
+    heading: { fontSize: 22, fontWeight: '700', color: colors.ink },
+    link: { color: colors.teal, fontWeight: '500' },
+    gridCard: { width: '48%', marginBottom: 20 },
+    gridImage: { width: '100%', aspectRatio: 1, borderRadius: 8, backgroundColor: colors.line },
+    gridName: { marginTop: 6, fontSize: 13, color: colors.ink },
+    gridPrice: { fontWeight: '600', marginTop: 2, color: colors.ink },
+  });
+}

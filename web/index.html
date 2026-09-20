@@ -8,6 +8,22 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <title>Marketplace</title>
+    <script>
+      // Runs before React mounts so there's no flash of the wrong theme on
+      // reload. ThemeContext takes over from here for anything reactive
+      // (toggling, system-preference changes, syncing after login).
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme_preference') || 'system';
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (stored === 'dark' || (stored === 'system' && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {
+          /* localStorage unavailable (private mode etc) - default to light, non-fatal */
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

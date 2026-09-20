@@ -136,7 +136,7 @@ export function CartPage() {
     return (
       <div className="mx-auto max-w-md px-4 py-16 text-center">
         <p className="font-display text-xl">Sign in to view your cart</p>
-        <Link to="/login" className="mt-4 inline-block rounded-full bg-ink px-6 py-2.5 text-white">
+        <Link to="/login" className="mt-4 inline-block rounded-full bg-primary px-6 py-2.5 text-white">
           Log in
         </Link>
       </div>
@@ -202,7 +202,7 @@ export function CartPage() {
           <button
             onClick={handleCheckout}
             disabled={checkingOut || hasIssues}
-            className="mt-4 w-full rounded-full bg-ink py-3 text-white disabled:opacity-50"
+            className="mt-4 w-full rounded-full bg-primary py-3 text-white disabled:opacity-50"
           >
             {checkingOut ? 'Placing order…' : 'Checkout'}
           </button>

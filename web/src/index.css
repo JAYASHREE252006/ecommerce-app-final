@@ -2,6 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * SINGLE SOURCE OF TRUTH for theme colors. Every Tailwind color utility
+ * (bg-canvas, text-ink, border-line, etc.) reads these via tailwind.config.js.
+ * Values are "R G B" space-separated (no commas) so Tailwind can layer its
+ * own opacity modifiers on top, e.g. bg-ink/80.
+ *
+ * Contrast is checked against WCAG AA (4.5:1 for body text): --color-ink on
+ * --color-canvas exceeds 12:1 in both themes.
+ */
+:root {
+  --color-canvas: 245 246 242;   /* page background */
+  --color-surface: 255 255 255;  /* cards, inputs - sits "above" the canvas */
+  --color-ink: 27 31 35;         /* body text */
+  --color-teal: 15 107 92;
+  --color-teal-dark: 11 79 68;
+  --color-teal-light: 228 240 236;
+  --color-gold: 201 138 44;
+  --color-gold-light: 251 240 221;
+  --color-line: 221 217 207;     /* borders, dividers */
+}
+
+.dark {
+  --color-canvas: 18 21 23;
+  --color-surface: 30 34 37;
+  --color-ink: 234 232 226;
+  --color-teal: 62 179 156;
+  --color-teal-dark: 40 138 119;
+  --color-teal-light: 22 46 41;
+  --color-gold: 224 171 79;
+  --color-gold-light: 51 41 20;
+  --color-line: 56 61 65;
+}
+
 body {
   @apply bg-canvas text-ink font-sans antialiased;
 }
@@ -10,6 +43,6 @@ body {
   height: 6px;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background-color: #DDD9CF;
+  background-color: rgb(var(--color-line));
   border-radius: 999px;
 }

@@ -107,7 +107,7 @@ export function ProductDetails() {
                         key={size}
                         onClick={() => setSelectedSize(size)}
                         className={`rounded-full border px-3 py-1 text-sm ${
-                          selectedSize === size ? 'border-ink bg-ink text-white' : 'border-line'
+                          selectedSize === size ? 'border-primary bg-primary text-white' : 'border-line'
                         }`}
                       >
                         {size}
@@ -125,7 +125,7 @@ export function ProductDetails() {
                         key={color}
                         onClick={() => setSelectedColor(color)}
                         className={`rounded-full border px-3 py-1 text-sm ${
-                          selectedColor === color ? 'border-ink bg-ink text-white' : 'border-line'
+                          selectedColor === color ? 'border-primary bg-primary text-white' : 'border-line'
                         }`}
                       >
                         {color}
@@ -152,7 +152,7 @@ export function ProductDetails() {
             <button
               onClick={addToCart}
               disabled={!canAdd || adding}
-              className="rounded-full bg-ink px-6 py-2.5 text-white disabled:opacity-50"
+              className="rounded-full bg-primary px-6 py-2.5 text-white disabled:opacity-50"
             >
               {adding ? 'Adding…' : 'Add to cart'}
             </button>

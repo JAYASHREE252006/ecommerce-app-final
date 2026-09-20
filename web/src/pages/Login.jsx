@@ -37,7 +37,7 @@ export function Login() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-md border border-line bg-white px-3 py-2 outline-none focus:border-teal"
+          className="w-full rounded-md border border-line bg-surface px-3 py-2 outline-none focus:border-teal"
         />
         <input
           type="password"
@@ -45,13 +45,13 @@ export function Login() {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-md border border-line bg-white px-3 py-2 outline-none focus:border-teal"
+          className="w-full rounded-md border border-line bg-surface px-3 py-2 outline-none focus:border-teal"
         />
         {error && <p className="text-sm text-red-600">{error}</p>}
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-full bg-ink px-4 py-2.5 text-white disabled:opacity-50"
+          className="w-full rounded-full bg-primary px-4 py-2.5 text-white disabled:opacity-50"
         >
           {loading ? 'Logging in…' : 'Log in'}
         </button>

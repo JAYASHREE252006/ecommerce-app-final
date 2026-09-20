@@ -4,18 +4,20 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useRecentlyViewed } from '../../hooks/useRecentlyViewed';
 import { useAuth } from '../../context/AuthContext';
 import { ProductCard } from '../ProductCard/ProductCard';
+import { useTheme } from '../../context/ThemeContext';
 
 export function RecentlyViewed() {
   const navigation = useNavigation();
   const { items, isLoading } = useRecentlyViewed();
   const { user } = useAuth();
+  const { colors } = useTheme();
   const queryClient = useQueryClient();
 
   if (isLoading || !items.length) return null; // hide empty section (spec section 29)
 
   return (
     <View style={styles.section}>
-      <Text style={styles.title}>Recently Viewed</Text>
+      <Text style={[styles.title, { color: colors.ink }]}>Recently Viewed</Text>
       <FlatList
         horizontal
         data={items}

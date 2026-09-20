@@ -41,4 +41,17 @@ const me = asyncHandler(async (req, res) => {
   ok(res, { user: req.user.toSafeJSON() });
 });
 
-module.exports = { register, login, me };
+/** PATCH /api/auth/theme - persists the user's theme choice so it follows them across devices. */
+const updateThemePreference = asyncHandler(async (req, res) => {
+  const { themePreference } = req.body;
+  if (!['light', 'dark', 'system'].includes(themePreference)) {
+    throw new ApiError(400, "themePreference must be 'light', 'dark', or 'system'");
+  }
+
+  req.user.themePreference = themePreference;
+  await req.user.save();
+
+  ok(res, { user: req.user.toSafeJSON() });
+});
+
+module.exports = { register, login, me, updateThemePreference };

@@ -13,6 +13,8 @@ const userSchema = new mongoose.Schema(
       index: true,
     },
     password: { type: String, required: true, minlength: 6, select: false },
+    // 'system' means "follow the device/browser setting"; 'light'/'dark' are explicit choices.
+    themePreference: { type: String, enum: ['light', 'dark', 'system'], default: 'system' },
   },
   { timestamps: true }
 );
@@ -33,6 +35,7 @@ userSchema.methods.toSafeJSON = function toSafeJSON() {
     id: this._id,
     name: this.name,
     email: this.email,
+    themePreference: this.themePreference,
     createdAt: this.createdAt,
   };
 };

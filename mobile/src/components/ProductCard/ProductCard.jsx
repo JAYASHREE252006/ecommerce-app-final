@@ -2,16 +2,12 @@ import { useState } from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import { cartService, wishlistService } from '../../services/recentlyViewedService';
 import { useAuth } from '../../context/AuthContext';
-
-const COLORS = {
-  ink: '#1B1F23',
-  teal: '#0F6B5C',
-  line: '#DDD9CF',
-  muted: '#8A8578',
-};
+import { useTheme } from '../../context/ThemeContext';
 
 export function ProductCard({ product, onPress, onChanged }) {
   const { user } = useAuth();
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const [cartState, setCartState] = useState(product.isInCart ? 'in_cart' : 'idle');
   const [wishState, setWishState] = useState(product.isWishlisted ? 'saved' : 'idle');
   const outOfStock = product.availability === 'out_of_stock';
@@ -82,7 +78,7 @@ export function ProductCard({ product, onPress, onChanged }) {
           </Text>
         </Pressable>
         <Pressable onPress={handleToggleWishlist} style={styles.wishBtn}>
-          <Text style={{ color: wishState === 'saved' ? COLORS.teal : COLORS.muted, fontSize: 16 }}>
+          <Text style={{ color: wishState === 'saved' ? colors.teal : colors.inkMuted, fontSize: 16 }}>
             {wishState === 'saved' ? '♥' : '♡'}
           </Text>
         </Pressable>
@@ -91,27 +87,29 @@ export function ProductCard({ product, onPress, onChanged }) {
   );
 }
 
-const styles = StyleSheet.create({
-  card: { width: 150, marginRight: 12 },
-  imageWrap: { width: 150, height: 150, borderRadius: 8, overflow: 'hidden', backgroundColor: '#EEE' },
-  image: { width: '100%', height: '100%' },
-  badge: {
-    position: 'absolute',
-    top: 6,
-    left: 6,
-    backgroundColor: 'rgba(27,31,35,0.85)',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  badgeText: { color: 'white', fontSize: 10 },
-  name: { marginTop: 6, fontSize: 13, color: COLORS.ink, minHeight: 34 },
-  priceRow: { flexDirection: 'row', alignItems: 'baseline', gap: 6, marginTop: 2 },
-  price: { fontSize: 15, fontWeight: '600', color: COLORS.ink },
-  originalPrice: { fontSize: 12, color: COLORS.muted, textDecorationLine: 'line-through' },
-  actions: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8 },
-  cartBtn: { flex: 1, backgroundColor: COLORS.ink, borderRadius: 999, paddingVertical: 6, alignItems: 'center' },
-  cartBtnText: { color: 'white', fontSize: 12, fontWeight: '500' },
-  wishBtn: { borderWidth: 1, borderColor: COLORS.line, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 6 },
-  disabled: { opacity: 0.5 },
-});
+function createStyles(colors) {
+  return StyleSheet.create({
+    card: { width: 150, marginRight: 12 },
+    imageWrap: { width: 150, height: 150, borderRadius: 8, overflow: 'hidden', backgroundColor: colors.line },
+    image: { width: '100%', height: '100%' },
+    badge: {
+      position: 'absolute',
+      top: 6,
+      left: 6,
+      backgroundColor: colors.overlay,
+      paddingHorizontal: 6,
+      paddingVertical: 2,
+      borderRadius: 4,
+    },
+    badgeText: { color: 'white', fontSize: 10 },
+    name: { marginTop: 6, fontSize: 13, color: colors.ink, minHeight: 34 },
+    priceRow: { flexDirection: 'row', alignItems: 'baseline', gap: 6, marginTop: 2 },
+    price: { fontSize: 15, fontWeight: '600', color: colors.ink },
+    originalPrice: { fontSize: 12, color: colors.inkMuted, textDecorationLine: 'line-through' },
+    actions: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8 },
+    cartBtn: { flex: 1, backgroundColor: colors.primary, borderRadius: 999, paddingVertical: 6, alignItems: 'center' },
+    cartBtnText: { color: 'white', fontSize: 12, fontWeight: '500' },
+    wishBtn: { borderWidth: 1, borderColor: colors.line, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 6 },
+    disabled: { opacity: 0.5 },
+  });
+}
