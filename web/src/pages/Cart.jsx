@@ -1,25 +1,29 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { cartService } from '../services/cartService';
 import { useAuth } from '../context/AuthContext';
 
-const ISSUE_LABELS = {
-  out_of_stock: 'Out of stock',
-  insufficient_stock: 'Only limited stock left',
-  price_changed: 'Price has changed since you added this',
-  variant_unavailable: 'This size/color is no longer available',
-  product_deleted: 'This product is no longer available',
-};
+function IssueLabel({ issue }) {
+  const labels = {
+    out_of_stock: 'Out of stock',
+    insufficient_stock: 'Not enough stock for this quantity',
+    price_changed: 'Price has changed since you added this',
+    variant_unavailable: 'This size/color is no longer available',
+    product_deleted: 'This product is no longer available',
+  };
+  if (!issue) return null;
+  return <p className="mt-1 text-xs text-red-600">{labels[issue] || issue}</p>;
+}
 
-function CartLine({ item, onChanged }) {
+function CartLineItem({ item, onChanged }) {
   const [busy, setBusy] = useState(false);
 
-  async function updateQty(newQty) {
-    if (newQty < 1) return;
+  async function updateQty(qty) {
+    if (qty < 1) return;
     setBusy(true);
     try {
-      await cartService.updateQuantity(item.itemId, newQty);
+      await cartService.updateQuantity(item.itemId, qty);
       onChanged();
     } finally {
       setBusy(false);
@@ -39,7 +43,7 @@ function CartLine({ item, onChanged }) {
   async function toggleSaved() {
     setBusy(true);
     try {
-      if (item.savedForLaterView) await cartService.moveToCart(item.itemId);
+      if (item.savedForLater) await cartService.moveToCart(item.itemId);
       else await cartService.saveForLater(item.itemId);
       onChanged();
     } finally {
@@ -49,9 +53,9 @@ function CartLine({ item, onChanged }) {
 
   if (!item.product) {
     return (
-      <div className="flex items-center justify-between border-b border-line py-4 text-sm text-red-600">
-        <span>A product in your cart is no longer available.</span>
-        <button onClick={remove} className="underline">
+      <div className="flex items-center justify-between border-b border-line py-4">
+        <p className="text-sm text-ink/60">A product in your cart is no longer available.</p>
+        <button onClick={remove} className="text-sm text-red-600 underline">
           Remove
         </button>
       </div>
@@ -60,53 +64,39 @@ function CartLine({ item, onChanged }) {
 
   return (
     <div className="flex gap-4 border-b border-line py-4">
-      <Link to={`/products/${item.product.id}`} className="h-20 w-20 shrink-0 overflow-hidden rounded-md bg-line/40">
-        <img
-          src={item.product.images?.[0] || 'https://placehold.co/200x200'}
-          alt={item.product.name}
-          className="h-full w-full object-cover"
-        />
-      </Link>
+      <img
+        src={item.product.images?.[0] || 'https://placehold.co/100x100'}
+        alt={item.product.name}
+        className="h-20 w-20 rounded-md object-cover"
+      />
       <div className="flex-1">
-        <Link to={`/products/${item.product.id}`} className="text-sm font-medium text-ink">
+        <Link to={`/products/${item.product.id}`} className="font-medium hover:underline">
           {item.product.name}
         </Link>
         {(item.variant?.size || item.variant?.color) && (
-          <p className="mt-0.5 text-xs text-ink/50">
+          <p className="text-xs text-ink/50">
             {[item.variant.size, item.variant.color].filter(Boolean).join(' / ')}
           </p>
         )}
         <p className="mt-1 font-display">₹{item.currentPrice}</p>
+        <IssueLabel issue={item.issue} />
 
-        {item.issue && (
-          <p className="mt-1 text-xs font-medium text-red-600">{ISSUE_LABELS[item.issue] || item.issue}</p>
-        )}
-
-        {!item.savedForLaterView && (
-          <div className="mt-2 flex items-center gap-2">
-            <button
-              disabled={busy || item.quantity <= 1}
-              onClick={() => updateQty(item.quantity - 1)}
-              className="h-7 w-7 rounded-full border border-line disabled:opacity-40"
-            >
-              −
-            </button>
-            <span className="w-6 text-center text-sm">{item.quantity}</span>
-            <button
-              disabled={busy}
-              onClick={() => updateQty(item.quantity + 1)}
-              className="h-7 w-7 rounded-full border border-line"
-            >
-              +
-            </button>
-          </div>
-        )}
-
-        <div className="mt-2 flex gap-4 text-xs">
-          <button disabled={busy} onClick={toggleSaved} className="text-teal-dark underline-offset-2 hover:underline">
-            {item.savedForLaterView ? 'Move to cart' : 'Save for later'}
+        <div className="mt-2 flex items-center gap-3">
+          {!item.savedForLater && (
+            <div className="flex items-center gap-2 rounded-full border border-line px-2 py-0.5">
+              <button disabled={busy} onClick={() => updateQty(item.quantity - 1)} className="px-1">
+                −
+              </button>
+              <span className="w-5 text-center text-sm">{item.quantity}</span>
+              <button disabled={busy} onClick={() => updateQty(item.quantity + 1)} className="px-1">
+                +
+              </button>
+            </div>
+          )}
+          <button disabled={busy} onClick={toggleSaved} className="text-xs text-teal-dark underline">
+            {item.savedForLater ? 'Move to cart' : 'Save for later'}
           </button>
-          <button disabled={busy} onClick={remove} className="text-ink/50 underline-offset-2 hover:underline">
+          <button disabled={busy} onClick={remove} className="text-xs text-red-600 underline">
             Remove
           </button>
         </div>
@@ -117,8 +107,8 @@ function CartLine({ item, onChanged }) {
 
 export function CartPage() {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [checkoutError, setCheckoutError] = useState('');
   const [checkingOut, setCheckingOut] = useState(false);
 
@@ -134,37 +124,30 @@ export function CartPage() {
 
   if (!user) {
     return (
-      <div className="mx-auto max-w-md px-4 py-16 text-center">
-        <p className="font-display text-xl">Sign in to view your cart</p>
-        <Link to="/login" className="mt-4 inline-block rounded-full bg-primary px-6 py-2.5 text-white">
-          Log in
-        </Link>
+      <div className="mx-auto max-w-2xl px-4 py-16">
+        <p>Please log in to view your cart.</p>
       </div>
     );
   }
-
-  if (isLoading) return <div className="mx-auto max-w-3xl px-4 py-16">Loading…</div>;
+  if (isLoading) return <div className="mx-auto max-w-2xl px-4 py-16">Loading…</div>;
 
   const items = data?.items || [];
   const savedForLater = data?.savedForLater || [];
   const hasIssues = items.some((i) => i.issue);
-  const total = items.reduce((sum, i) => sum + (i.currentPrice || 0) * i.quantity, 0);
+  const subtotal = items.reduce((sum, i) => sum + (i.currentPrice || 0) * i.quantity, 0);
 
   async function handleCheckout() {
     setCheckoutError('');
     setCheckingOut(true);
     try {
-      // Re-validate right before checkout - catches anything that went stale
-      // since the page loaded (another device, stock sold out elsewhere, etc).
       const validation = await cartService.validate();
       if (!validation.canCheckout) {
-        setCheckoutError('Please resolve the issues below before checking out.');
         refresh();
+        setCheckoutError('Please resolve the issues above before checking out.');
         return;
       }
       await cartService.checkout();
       refresh();
-      // Purchase changes what's excluded from recommendations/continue-shopping.
       queryClient.invalidateQueries({ queryKey: ['recommendations', user?.id] });
       queryClient.invalidateQueries({ queryKey: ['continueShopping', user?.id] });
       navigate('/');
@@ -177,44 +160,41 @@ export function CartPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="font-display text-3xl">Your cart</h1>
+      <h1 className="font-display text-3xl">Your Cart</h1>
 
       {items.length === 0 ? (
         <p className="mt-6 text-ink/60">Your cart is empty.</p>
       ) : (
         <div className="mt-6">
           {items.map((item) => (
-            <CartLine key={item.itemId} item={item} onChanged={refresh} />
+            <CartLineItem key={item.itemId} item={item} onChanged={refresh} />
           ))}
-
           <div className="mt-6 flex items-center justify-between">
-            <span className="text-ink/60">Total</span>
-            <span className="font-display text-xl">₹{total}</span>
+            <span className="text-ink/60">Subtotal</span>
+            <span className="font-display text-xl">₹{subtotal}</span>
           </div>
-
           {checkoutError && <p className="mt-3 text-sm text-red-600">{checkoutError}</p>}
           {hasIssues && !checkoutError && (
             <p className="mt-3 text-sm text-red-600">
-              Some items need attention before you can check out.
+              Some items have issues - resolve them before checking out.
             </p>
           )}
-
           <button
             onClick={handleCheckout}
             disabled={checkingOut || hasIssues}
             className="mt-4 w-full rounded-full bg-primary py-3 text-white disabled:opacity-50"
           >
-            {checkingOut ? 'Placing order…' : 'Checkout'}
+            {checkingOut ? 'Placing order…' : 'Checkout (Cash on Delivery)'}
           </button>
         </div>
       )}
 
       {savedForLater.length > 0 && (
-        <div className="mt-10">
-          <h2 className="font-display text-xl">Saved for later</h2>
+        <div className="mt-12">
+          <h2 className="font-display text-2xl">Saved for later</h2>
           <div className="mt-4">
             {savedForLater.map((item) => (
-              <CartLine key={item.itemId} item={{ ...item, savedForLaterView: true }} onChanged={refresh} />
+              <CartLineItem key={item.itemId} item={item} onChanged={refresh} />
             ))}
           </div>
         </div>

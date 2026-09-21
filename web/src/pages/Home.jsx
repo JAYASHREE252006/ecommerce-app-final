@@ -32,8 +32,7 @@ export function Home() {
       <section className="mx-auto max-w-6xl px-4 py-8">
         <h2 className="mb-4 font-display text-2xl">All products</h2>
         <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 md:grid-cols-4">
-          {isLoading &&
-            Array.from({ length: 8 }).map((_, i) => <CardSkeleton key={i} />)}
+          {isLoading && Array.from({ length: 8 }).map((_, i) => <CardSkeleton key={i} />)}
           {data?.products?.map((p) => (
             <Link key={p._id} to={`/products/${p._id}`} className="block">
               <div className="aspect-square overflow-hidden rounded-md bg-line/40">

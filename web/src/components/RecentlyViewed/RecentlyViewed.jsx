@@ -18,8 +18,6 @@ export function RecentlyViewed() {
       </ProductCarouselSection>
     );
   }
-
-  // Empty section is simply not rendered (spec section 29).
   if (!items.length) return null;
 
   return (
@@ -28,9 +26,7 @@ export function RecentlyViewed() {
         <ProductCard
           key={product.id}
           product={product}
-          onChanged={() =>
-            queryClient.invalidateQueries({ queryKey: ['recentlyViewed', user?.id || 'guest'] })
-          }
+          onChanged={() => queryClient.invalidateQueries({ queryKey: ['recentlyViewed', user?.id || 'guest'] })}
         />
       ))}
     </ProductCarouselSection>

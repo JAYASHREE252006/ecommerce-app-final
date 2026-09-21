@@ -69,7 +69,7 @@ export function ProductCard({ product, onChanged }) {
             }}
           />
           {outOfStock && (
-            <span className="absolute left-2 top-2 rounded bg-ink/80 px-2 py-0.5 text-[11px] text-white">
+            <span className="absolute left-2 top-2 rounded bg-black/70 px-2 py-0.5 text-[11px] text-white">
               Out of stock
             </span>
           )}
@@ -91,7 +91,7 @@ export function ProductCard({ product, onChanged }) {
         <button
           onClick={handleAddToCart}
           disabled={outOfStock || cartState === 'loading' || cartState === 'in_cart'}
-          className="flex-1 rounded-full bg-ink px-3 py-1.5 text-xs font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex-1 rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-50"
         >
           {cartState === 'loading' ? 'Adding…' : cartState === 'in_cart' ? 'In cart' : 'Add to cart'}
         </button>

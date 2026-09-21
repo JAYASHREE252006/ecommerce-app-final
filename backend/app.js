@@ -7,16 +7,22 @@ const cartRoutes = require('./routes/cartRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const userRoutes = require('./routes/userRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 function createApp() {
   const app = express();
 
-  const corsOrigins = (process.env.CORS_ORIGINS || '*')
-    .split(',')
-    .map((o) => o.trim());
+  const corsOrigins = (process.env.CORS_ORIGINS || '*').split(',').map((o) => o.trim());
 
   app.use(cors({ origin: corsOrigins, credentials: true }));
+
+  // Payment webhooks need the RAW request body to verify the provider's
+  // signature (HMAC is computed over the exact bytes sent, not the
+  // re-serialized JSON) - so this route is mounted with express.raw()
+  // BEFORE the global express.json() parser touches the request.
+  app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
+
   app.use(express.json());
 
   app.get('/api/health', (req, res) => res.json({ success: true, data: { status: 'ok' } }));
@@ -27,6 +33,7 @@ function createApp() {
   app.use('/api/wishlist', wishlistRoutes);
   app.use('/api/orders', orderRoutes);
   app.use('/api/users', userRoutes);
+  app.use('/api/payments', paymentRoutes);
 
   app.use(notFound);
   app.use(errorHandler);

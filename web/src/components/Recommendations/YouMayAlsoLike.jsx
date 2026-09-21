@@ -18,7 +18,6 @@ export function YouMayAlsoLike() {
       </ProductCarouselSection>
     );
   }
-
   if (!items.length) return null;
 
   return (
@@ -27,9 +26,7 @@ export function YouMayAlsoLike() {
         <ProductCard
           key={product.id}
           product={product}
-          onChanged={() =>
-            queryClient.invalidateQueries({ queryKey: ['recommendations', user?.id || 'guest'] })
-          }
+          onChanged={() => queryClient.invalidateQueries({ queryKey: ['recommendations', user?.id || 'guest'] })}
         />
       ))}
     </ProductCarouselSection>

@@ -3,7 +3,7 @@ import api from './api';
 export const cartService = {
   async get() {
     const res = await api.get('/cart');
-    return res.data.data; // { items, savedForLater }
+    return res.data.data;
   },
   async add(productId, quantity = 1, variant = {}) {
     const res = await api.post('/cart/items', { productId, quantity, variant });
@@ -27,11 +27,10 @@ export const cartService = {
   },
   async validate() {
     const res = await api.get('/cart/validate');
-    return res.data.data; // { canCheckout, issues, items }
+    return res.data.data;
   },
-  async checkout() {
-    const res = await api.post('/orders');
+  async checkout(paymentMethod = 'cod') {
+    const res = await api.post('/orders', { paymentMethod });
     return res.data.data.order;
   },
 };
-

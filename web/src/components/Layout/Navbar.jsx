@@ -36,6 +36,11 @@ export function Navbar() {
               Cart
             </Link>
           )}
+          {user && (
+            <Link to="/orders" className="text-ink/70 hover:text-ink">
+              My Orders
+            </Link>
+          )}
           {user ? (
             <>
               <span className="text-ink/60">Hi, {user.name.split(' ')[0]}</span>
@@ -48,10 +53,7 @@ export function Navbar() {
               <Link to="/login" className="text-ink/70 hover:text-ink">
                 Log in
               </Link>
-              <Link
-                to="/register"
-                className="rounded-full bg-primary px-4 py-1.5 text-white hover:bg-primary/90"
-              >
+              <Link to="/register" className="rounded-full bg-primary px-4 py-1.5 text-white hover:bg-primary/90">
                 Sign up
               </Link>
             </>

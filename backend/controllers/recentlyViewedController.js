@@ -10,29 +10,18 @@ const { emitToUser } = require('../sockets');
 
 const MAX_RECENTLY_VIEWED = parseInt(process.env.RECENTLY_VIEWED_MAX, 10) || 20;
 const MAX_CONTINUE_SHOPPING = parseInt(process.env.CONTINUE_SHOPPING_MAX, 10) || 10;
-// Recommendations use a wider signal window than what's shown in the
-// "Recently Viewed" carousel: we keep up to 50 unique viewed products per
-// user for scoring purposes, while the carousel itself still only ever
-// displays the newest 20 (see buildRecentlyViewedList's default limit).
 const BROWSING_HISTORY_MAX = parseInt(process.env.BROWSING_HISTORY_MAX, 10) || 50;
 
-/**
- * Deletes everything past the newest BROWSING_HISTORY_MAX activities for a
- * user. Only ever touches the handful of rows beyond the cap (typically 0
- * or 1), never scans/rewrites the user's whole history.
- */
 async function trimToLimit(userId) {
   const overflow = await ProductActivity.find({ user: userId, activityType: 'viewed' })
     .sort({ viewedAt: -1 })
     .skip(BROWSING_HISTORY_MAX)
     .select('_id');
-
   if (overflow.length) {
     await ProductActivity.deleteMany({ _id: { $in: overflow.map((d) => d._id) } });
   }
 }
 
-/** Builds the enriched, frontend-ready recently-viewed list for a user in one pass (no N+1). */
 async function buildRecentlyViewedList(userId, limit = MAX_RECENTLY_VIEWED) {
   const activities = await ProductActivity.find({ user: userId, activityType: 'viewed' })
     .sort({ viewedAt: -1 })
@@ -40,7 +29,7 @@ async function buildRecentlyViewedList(userId, limit = MAX_RECENTLY_VIEWED) {
     .populate('product', PUBLIC_FIELDS)
     .lean();
 
-  const valid = activities.filter((a) => a.product); // guard against deleted products
+  const valid = activities.filter((a) => a.product);
 
   const [wishlist, cart] = await Promise.all([
     Wishlist.findOne({ user: userId }).select('products').lean(),
@@ -68,33 +57,19 @@ async function buildRecentlyViewedList(userId, limit = MAX_RECENTLY_VIEWED) {
   }));
 }
 
-/**
- * POST /api/products/:productId/view
- * Works for guests (no-op ack, frontend tracks locally) and authenticated
- * users (persisted + trimmed + broadcast to the user's other sessions).
- */
 const recordView = asyncHandler(async (req, res) => {
   const { productId } = req.params;
   if (!mongoose.isValidObjectId(productId)) {
     throw new ApiError(400, 'Invalid product id');
   }
-
   const product = await Product.findById(productId).select('_id isActive');
   if (!product) {
     throw new ApiError(404, 'Product not found');
   }
-
   if (!req.userId) {
-    // Guest: nothing to persist server-side, frontend owns local history.
     return ok(res, { tracked: 'local' });
   }
 
-  // Atomic upsert keyed on the unique (user, product, activityType) index:
-  // - first view -> creates the doc
-  // - repeat view -> updates viewedAt in place (never a second row)
-  // Concurrent requests for the same user+product race safely on the index;
-  // whichever write lands last simply sets the latest viewedAt, which is
-  // exactly the "most recent wins" behavior we want.
   await ProductActivity.findOneAndUpdate(
     { user: req.userId, product: productId, activityType: 'viewed' },
     { $set: { viewedAt: new Date() } },
@@ -109,36 +84,24 @@ const recordView = asyncHandler(async (req, res) => {
   ok(res, { tracked: 'server', items });
 });
 
-/** GET /api/users/recently-viewed */
 const getRecentlyViewed = asyncHandler(async (req, res) => {
   const items = await buildRecentlyViewedList(req.userId);
   ok(res, { items });
 });
 
-/**
- * POST /api/users/recently-viewed/sync
- * Merges a guest's local history into the server's on login, per-item,
- * "newest viewedAt wins" - using Mongo's atomic $max update operator so
- * concurrent/duplicate sync calls are safe and idempotent.
- */
 const syncRecentlyViewed = asyncHandler(async (req, res) => {
   const { items } = req.body;
   if (!Array.isArray(items)) {
     throw new ApiError(400, 'items must be an array');
   }
-
-  const validItems = items.filter(
-    (it) => it && mongoose.isValidObjectId(it.productId) && it.viewedAt
-  );
+  const validItems = items.filter((it) => it && mongoose.isValidObjectId(it.productId) && it.viewedAt);
 
   if (validItems.length) {
-    // Confirm products still exist before writing activity rows for them.
     const existingIds = new Set(
-      (
-        await Product.find({ _id: { $in: validItems.map((i) => i.productId) } }).select('_id')
-      ).map((p) => p._id.toString())
+      (await Product.find({ _id: { $in: validItems.map((i) => i.productId) } }).select('_id')).map((p) =>
+        p._id.toString()
+      )
     );
-
     const ops = validItems
       .filter((it) => existingIds.has(it.productId))
       .map((it) => ({
@@ -148,7 +111,6 @@ const syncRecentlyViewed = asyncHandler(async (req, res) => {
           upsert: true,
         },
       }));
-
     if (ops.length) {
       await ProductActivity.bulkWrite(ops, { ordered: false });
     }
@@ -158,11 +120,9 @@ const syncRecentlyViewed = asyncHandler(async (req, res) => {
 
   const canonicalItems = await buildRecentlyViewedList(req.userId);
   emitToUser(req.userId, 'recentlyViewedUpdated', { userId: req.userId, items: canonicalItems });
-
   ok(res, { items: canonicalItems });
 });
 
-/** GET /api/users/continue-shopping - viewed but NOT purchased, newest-viewed first. */
 const getContinueShopping = asyncHandler(async (req, res) => {
   const activities = await ProductActivity.find({ user: req.userId, activityType: 'viewed' })
     .sort({ viewedAt: -1 })
@@ -174,9 +134,6 @@ const getContinueShopping = asyncHandler(async (req, res) => {
     return ok(res, { items: [] });
   }
 
-  // Single aggregation: which of the viewed products has this user actually
-  // purchased (order status counts as a purchase)? Avoids pulling every
-  // order into memory - Mongo does the filtering.
   const purchasedIds = await Order.aggregate([
     { $match: { user: req.userId, status: { $in: Order.PURCHASED_STATUSES } } },
     { $unwind: '$items' },

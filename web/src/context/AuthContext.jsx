@@ -11,8 +11,6 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const queryClient = useQueryClient();
 
-  // On app load: if a token exists, validate it and reconnect the socket.
-  // If invalid/expired, fall back to a clean guest state instead of erroring.
   useEffect(() => {
     const token = localStorage.getItem('auth_token');
     if (!token) {
@@ -31,16 +29,17 @@ export function AuthProvider({ children }) {
       .finally(() => setLoading(false));
   }, []);
 
-  const afterAuthSuccess = useCallback(async ({ user: u, token }) => {
-    localStorage.setItem('auth_token', token);
-    setUser(u);
-    socketService.connectSocket(token);
-    // Guest -> account merge (section 6/7 of the spec).
-    await authSyncService.syncGuestHistoryToServer();
-    // Recently-viewed / continue-shopping widgets should reflect the merged server state immediately.
-    queryClient.invalidateQueries({ queryKey: ['recentlyViewed'] });
-    queryClient.invalidateQueries({ queryKey: ['continueShopping'] });
-  }, [queryClient]);
+  const afterAuthSuccess = useCallback(
+    async ({ user: u, token }) => {
+      localStorage.setItem('auth_token', token);
+      setUser(u);
+      socketService.connectSocket(token);
+      await authSyncService.syncGuestHistoryToServer();
+      queryClient.invalidateQueries({ queryKey: ['recentlyViewed'] });
+      queryClient.invalidateQueries({ queryKey: ['continueShopping'] });
+    },
+    [queryClient]
+  );
 
   const login = useCallback(
     async (email, password) => {
@@ -59,13 +58,9 @@ export function AuthProvider({ children }) {
   );
 
   const logout = useCallback(() => {
-    // Critical: tear down the socket and any per-user cached data so the
-    // NEXT guest/user on this device never sees this user's activity.
     localStorage.removeItem('auth_token');
     socketService.disconnectSocket();
     setUser(null);
-    // Drop ALL cached server-state, not just recently-viewed - a stale cache
-    // is exactly how user A's data could leak onto user B's screen.
     queryClient.clear();
   }, [queryClient]);
 

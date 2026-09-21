@@ -19,7 +19,7 @@ const sampleProducts = [
     brand: 'Urbanite',
     price: 599,
     originalPrice: 799,
-    stock: 0, // ignored - this product uses variants instead
+    stock: 0,
     rating: 4.3,
     ratingCount: 210,
     images: ['https://picsum.photos/seed/tshirt/400'],

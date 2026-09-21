@@ -9,8 +9,7 @@ export function ContinueShopping() {
   const { items, isLoading } = useContinueShopping();
   const queryClient = useQueryClient();
 
-  if (!user) return null; // needs purchase history to be meaningful
-
+  if (!user) return null;
   if (isLoading) {
     return (
       <ProductCarouselSection title="Continue Shopping">
@@ -20,7 +19,6 @@ export function ContinueShopping() {
       </ProductCarouselSection>
     );
   }
-
   if (!items.length) return null;
 
   return (

@@ -1,22 +1,18 @@
 import api from './api';
 
 export const productActivityService = {
-  /** Fire-and-forget-ish view tracking; caller decides how to handle guest vs server response. */
   async recordView(productId) {
     const res = await api.post(`/products/${productId}/view`);
     return res.data.data;
   },
-
   async getRecentlyViewed() {
     const res = await api.get('/users/recently-viewed');
     return res.data.data.items;
   },
-
   async syncRecentlyViewed(items) {
     const res = await api.post('/users/recently-viewed/sync', { items });
     return res.data.data.items;
   },
-
   async getContinueShopping() {
     const res = await api.get('/users/continue-shopping');
     return res.data.data.items;

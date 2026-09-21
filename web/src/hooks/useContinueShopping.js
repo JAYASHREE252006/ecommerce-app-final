@@ -4,10 +4,6 @@ import { useAuth } from '../context/AuthContext';
 import { productActivityService } from '../services/recentlyViewedService';
 import { socketService } from '../services/socketService';
 
-/**
- * Continue Shopping requires purchase history, so it only makes sense for
- * authenticated users (guests have no order history to exclude against).
- */
 export function useContinueShopping() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -23,12 +19,8 @@ export function useContinueShopping() {
     if (!user) return undefined;
     const socket = socketService.getSocket();
     if (!socket) return undefined;
-
-    const onRecentlyViewed = () =>
-      queryClient.invalidateQueries({ queryKey: ['continueShopping', user.id] });
-    const onPurchase = () =>
-      queryClient.invalidateQueries({ queryKey: ['continueShopping', user.id] });
-
+    const onRecentlyViewed = () => queryClient.invalidateQueries({ queryKey: ['continueShopping', user.id] });
+    const onPurchase = () => queryClient.invalidateQueries({ queryKey: ['continueShopping', user.id] });
     socket.on('recentlyViewedUpdated', onRecentlyViewed);
     socket.on('purchaseUpdated', onPurchase);
     return () => {

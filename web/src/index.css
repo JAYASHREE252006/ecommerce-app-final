@@ -2,25 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-/*
- * SINGLE SOURCE OF TRUTH for theme colors. Every Tailwind color utility
- * (bg-canvas, text-ink, border-line, etc.) reads these via tailwind.config.js.
- * Values are "R G B" space-separated (no commas) so Tailwind can layer its
- * own opacity modifiers on top, e.g. bg-ink/80.
- *
- * Contrast is checked against WCAG AA (4.5:1 for body text): --color-ink on
- * --color-canvas exceeds 12:1 in both themes.
- */
 :root {
-  --color-canvas: 245 246 242;   /* page background */
-  --color-surface: 255 255 255;  /* cards, inputs - sits "above" the canvas */
-  --color-ink: 27 31 35;         /* body text */
+  --color-canvas: 245 246 242;
+  --color-surface: 255 255 255;
+  --color-ink: 27 31 35;
   --color-teal: 15 107 92;
   --color-teal-dark: 11 79 68;
   --color-teal-light: 228 240 236;
   --color-gold: 201 138 44;
   --color-gold-light: 251 240 221;
-  --color-line: 221 217 207;     /* borders, dividers */
+  --color-line: 221 217 207;
 }
 
 .dark {
