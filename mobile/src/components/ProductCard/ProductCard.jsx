@@ -45,10 +45,7 @@ export function ProductCard({ product, onPress, onChanged }) {
     <View style={styles.card}>
       <Pressable onPress={() => onPress(product.id)}>
         <View style={styles.imageWrap}>
-          <Image
-            source={{ uri: product.images?.[0] || 'https://placehold.co/400x400' }}
-            style={styles.image}
-          />
+          <Image source={{ uri: product.images?.[0] || 'https://placehold.co/400x400' }} style={styles.image} />
           {outOfStock && (
             <View style={styles.badge}>
               <Text style={styles.badgeText}>Out of stock</Text>

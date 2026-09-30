@@ -22,6 +22,7 @@ const cartSchema = new mongoose.Schema(
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true, index: true },
     items: { type: [cartItemSchema], default: [] },
     version: { type: Number, default: 0 },
+    lastAbandonedReminderAt: { type: Date, default: null },
   },
   { timestamps: true }
 );

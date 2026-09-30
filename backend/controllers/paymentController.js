@@ -3,6 +3,7 @@ const Order = require('../models/Order');
 const Product = require('../models/Product');
 const PaymentEvent = require('../models/PaymentEvent');
 const { asyncHandler, ApiError, ok } = require('../utils/apiHelpers');
+const { sendPushToUser } = require('../utils/pushNotificationService');
 
 /**
  * Verifies the webhook actually came from the payment provider using HMAC:
@@ -79,6 +80,13 @@ const handleWebhook = asyncHandler(async (req, res) => {
         order.status = 'confirmed';
         order.statusHistory.push({ status: 'confirmed', changedAt: new Date(), note: 'Payment captured' });
         await order.save();
+        sendPushToUser(
+          order.user,
+          'payment_update',
+          'Payment received',
+          `Payment for order ${order.invoiceNumber} was successful.`,
+          { orderId: order._id.toString() }
+        ).catch((err) => console.warn('[paymentController] push failed', err));
       } else if (eventType === 'payment.failed' && order.status === 'pending') {
         // Payment never went through - release the stock that was reserved at checkout.
         for (const item of order.items) {
@@ -102,6 +110,13 @@ const handleWebhook = asyncHandler(async (req, res) => {
         order.cancellationReason = 'Payment failed';
         order.statusHistory.push({ status: 'cancelled', changedAt: new Date(), note: 'Payment failed' });
         await order.save();
+        sendPushToUser(
+          order.user,
+          'payment_update',
+          'Payment failed',
+          `Payment for order ${order.invoiceNumber} could not be completed. The order has been cancelled.`,
+          { orderId: order._id.toString() }
+        ).catch((err) => console.warn('[paymentController] push failed', err));
       }
     }
   }

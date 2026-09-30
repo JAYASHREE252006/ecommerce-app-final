@@ -4,6 +4,7 @@ const Product = require('../models/Product');
 const Order = require('../models/Order');
 const { asyncHandler, ApiError, ok } = require('../utils/apiHelpers');
 const { generateInvoicePdf } = require('../utils/generateInvoicePdf');
+const { sendPushToUser } = require('../utils/pushNotificationService');
 
 /**
  * Checkout. Runs inside a MongoDB transaction: decrementing stock on N
@@ -90,6 +91,14 @@ const createOrder = asyncHandler(async (req, res) => {
     await session.endSession();
   }
 
+  sendPushToUser(
+    req.userId,
+    'order_confirmation',
+    'Order placed!',
+    `Your order ${order.invoiceNumber} for Rs.${order.totalAmount} has been placed.`,
+    { orderId: order._id.toString() }
+  ).catch((err) => console.warn('[orderController] order_confirmation push failed', err));
+
   ok(res, { order }, 201);
 });
 
@@ -165,6 +174,18 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
   order.statusHistory.push({ status, changedAt: new Date(), note: note || null });
   await order.save();
 
+  const categoryByStatus = { shipped: 'shipping_update', delivered: 'delivery_update' };
+  const category = categoryByStatus[status];
+  if (category) {
+    sendPushToUser(
+      req.userId,
+      category,
+      `Order ${status}`,
+      `Your order ${order.invoiceNumber} is now ${status}.`,
+      { orderId: order._id.toString() }
+    ).catch((err) => console.warn('[orderController] status push failed', err));
+  }
+
   ok(res, { order });
 });
 
@@ -204,6 +225,14 @@ const cancelOrder = asyncHandler(async (req, res) => {
   } finally {
     await session.endSession();
   }
+
+  sendPushToUser(
+    req.userId,
+    'payment_update',
+    'Order cancelled',
+    `Your order ${order.invoiceNumber} has been cancelled.`,
+    { orderId: order._id.toString() }
+  ).catch((err) => console.warn('[orderController] cancellation push failed', err));
 
   ok(res, { order });
 });

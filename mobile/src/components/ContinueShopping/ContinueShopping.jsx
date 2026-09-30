@@ -3,8 +3,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
 import { useContinueShopping } from '../../hooks/useContinueShopping';
 import { useAuth } from '../../context/AuthContext';
-import { ProductCard } from '../ProductCard/ProductCard';
 import { useTheme } from '../../context/ThemeContext';
+import { ProductCard } from '../ProductCard/ProductCard';
 
 export function ContinueShopping() {
   const navigation = useNavigation();

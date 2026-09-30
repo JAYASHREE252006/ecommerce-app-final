@@ -3,8 +3,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRecentlyViewed } from '../../hooks/useRecentlyViewed';
 import { useAuth } from '../../context/AuthContext';
-import { ProductCard } from '../ProductCard/ProductCard';
 import { useTheme } from '../../context/ThemeContext';
+import { ProductCard } from '../ProductCard/ProductCard';
 
 export function RecentlyViewed() {
   const navigation = useNavigation();
@@ -13,7 +13,7 @@ export function RecentlyViewed() {
   const { colors } = useTheme();
   const queryClient = useQueryClient();
 
-  if (isLoading || !items.length) return null; // hide empty section (spec section 29)
+  if (isLoading || !items.length) return null;
 
   return (
     <View style={styles.section}>

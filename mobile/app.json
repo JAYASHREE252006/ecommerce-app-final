@@ -10,15 +10,32 @@
       "supportsTablet": true
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
-      }
+      },
+      "package": "com.jayashree_s.mobile"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#0F6B5C"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "b84b6df1-c532-4fb9-8e63-94ecae3c93b8"
+      }
+    },
+    "owner": "jayashree_s"
   }
 }

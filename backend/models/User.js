@@ -14,6 +14,19 @@ const userSchema = new mongoose.Schema(
     },
     password: { type: String, required: true, minlength: 6, select: false },
     themePreference: { type: String, enum: ['light', 'dark', 'system'], default: 'system' },
+    // Per-category opt-in/out, all enabled by default. Any category not
+    // present in this map defaults to enabled - see notificationService's
+    // isCategoryEnabled helper.
+    notificationPreferences: {
+      order_confirmation: { type: Boolean, default: true },
+      payment_update: { type: Boolean, default: true },
+      shipping_update: { type: Boolean, default: true },
+      delivery_update: { type: Boolean, default: true },
+      price_drop: { type: Boolean, default: true },
+      back_in_stock: { type: Boolean, default: true },
+      abandoned_cart: { type: Boolean, default: true },
+      promotion: { type: Boolean, default: true },
+    },
   },
   { timestamps: true }
 );
@@ -35,6 +48,7 @@ userSchema.methods.toSafeJSON = function toSafeJSON() {
     name: this.name,
     email: this.email,
     themePreference: this.themePreference,
+    notificationPreferences: this.notificationPreferences,
     createdAt: this.createdAt,
   };
 };

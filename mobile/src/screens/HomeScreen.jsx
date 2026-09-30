@@ -44,6 +44,11 @@ export function HomeScreen({ navigation }) {
               >
                 <Text>{THEME_ICON[theme]}</Text>
               </Pressable>
+              {user && (
+                <Pressable onPress={() => navigation.navigate('NotificationSettings')}>
+                  <Text style={styles.link}>🔔</Text>
+                </Pressable>
+              )}
               {user ? (
                 <Pressable onPress={logout}>
                   <Text style={styles.link}>Log out</Text>
@@ -57,9 +62,7 @@ export function HomeScreen({ navigation }) {
           </View>
           <RecentlyViewed />
           <ContinueShopping />
-          <Text style={[styles.heading, { marginLeft: 16, marginTop: 24, fontSize: 18 }]}>
-            All products
-          </Text>
+          <Text style={[styles.heading, { marginLeft: 16, marginTop: 24, fontSize: 18 }]}>All products</Text>
         </View>
       }
       data={data?.products || []}
@@ -81,20 +84,11 @@ export function HomeScreen({ navigation }) {
   );
 }
 
-// Built from the active theme's colors on every render - cheap for an app
-// this size, and means every screen automatically reflects light/dark/system
-// without any component needing its own theme-switching logic.
 function createStyles(colors) {
   return StyleSheet.create({
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16 },
     headerActions: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-    themeToggle: {
-      borderWidth: 1,
-      borderColor: colors.line,
-      borderRadius: 999,
-      paddingHorizontal: 10,
-      paddingVertical: 4,
-    },
+    themeToggle: { borderWidth: 1, borderColor: colors.line, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 },
     heading: { fontSize: 22, fontWeight: '700', color: colors.ink },
     link: { color: colors.teal, fontWeight: '500' },
     gridCard: { width: '48%', marginBottom: 20 },

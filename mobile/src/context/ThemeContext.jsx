@@ -8,22 +8,12 @@ import { lightColors, darkColors, spacing, typography, radii } from '../theme/to
 const ThemeContext = createContext(null);
 const STORAGE_KEY = 'theme_preference';
 
-/**
- * Centralized theme state for the whole app: 'light' | 'dark' | 'system'.
- * - First launch: detects the device's current appearance automatically
- *   (via useColorScheme) since no stored preference exists yet.
- * - Manual change: persisted to AsyncStorage immediately, and to the server
- *   if logged in, so it follows the user to their other devices.
- * - Logged-in users: the server's saved value overwrites local storage on
- *   login, matching the web app's sync behavior.
- */
 export function ThemeProvider({ children }) {
   const { user } = useAuth();
-  const systemScheme = useColorScheme(); // 'light' | 'dark' | null
+  const systemScheme = useColorScheme();
   const [theme, setThemeState] = useState('system');
   const [hydrated, setHydrated] = useState(false);
 
-  // Load whatever was saved locally on first mount.
   useEffect(() => {
     (async () => {
       try {
@@ -35,7 +25,6 @@ export function ThemeProvider({ children }) {
     })();
   }, []);
 
-  // Server preference wins once the user is known (login / app-load-with-token).
   useEffect(() => {
     if (user?.themePreference && hydrated) {
       setThemeState(user.themePreference);

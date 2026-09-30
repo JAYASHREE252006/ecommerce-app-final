@@ -12,6 +12,13 @@ const MAX_RECENTLY_VIEWED = parseInt(process.env.RECENTLY_VIEWED_MAX, 10) || 20;
 const MAX_CONTINUE_SHOPPING = parseInt(process.env.CONTINUE_SHOPPING_MAX, 10) || 10;
 const BROWSING_HISTORY_MAX = parseInt(process.env.BROWSING_HISTORY_MAX, 10) || 50;
 
+function getTotalStock(product) {
+  if (product.variants && product.variants.length) {
+    return product.variants.reduce((sum, v) => sum + v.stock, 0);
+  }
+  return product.stock;
+}
+
 async function trimToLimit(userId) {
   const overflow = await ProductActivity.find({ user: userId, activityType: 'viewed' })
     .sort({ viewedAt: -1 })
@@ -50,7 +57,7 @@ async function buildRecentlyViewedList(userId, limit = MAX_RECENTLY_VIEWED) {
     category: a.product.category,
     brand: a.product.brand,
     rating: a.product.rating,
-    availability: a.product.isActive && a.product.stock > 0 ? 'in_stock' : 'out_of_stock',
+    availability: a.product.isActive && getTotalStock(a.product) > 0 ? 'in_stock' : 'out_of_stock',
     isWishlisted: wishlistSet.has(a.product._id.toString()),
     isInCart: cartSet.has(a.product._id.toString()),
     viewedAt: a.viewedAt,
@@ -161,7 +168,7 @@ const getContinueShopping = asyncHandler(async (req, res) => {
       category: a.product.category,
       brand: a.product.brand,
       rating: a.product.rating,
-      availability: a.product.isActive && a.product.stock > 0 ? 'in_stock' : 'out_of_stock',
+      availability: a.product.isActive && getTotalStock(a.product) > 0 ? 'in_stock' : 'out_of_stock',
       isWishlisted: wishlistSet.has(a.product._id.toString()),
       isInCart: cartSet.has(a.product._id.toString()),
       viewedAt: a.viewedAt,

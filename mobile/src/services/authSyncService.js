@@ -5,7 +5,6 @@ let syncInFlight = null;
 
 async function syncGuestHistoryToServer() {
   if (syncInFlight) return syncInFlight;
-
   const localItems = await recentlyViewedStorage.getRecentlyViewed();
   if (!localItems.length) return null;
 

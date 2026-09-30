@@ -8,6 +8,7 @@ const wishlistRoutes = require('./routes/wishlistRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const userRoutes = require('./routes/userRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 function createApp() {
@@ -34,6 +35,7 @@ function createApp() {
   app.use('/api/orders', orderRoutes);
   app.use('/api/users', userRoutes);
   app.use('/api/payments', paymentRoutes);
+  app.use('/api/notifications', notificationRoutes);
 
   app.use(notFound);
   app.use(errorHandler);

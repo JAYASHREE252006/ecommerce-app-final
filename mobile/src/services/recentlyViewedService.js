@@ -32,8 +32,8 @@ export const productService = {
 
 export const cartService = {
   async add(productId, quantity = 1) {
-    const res = await api.post('/cart', { productId, quantity });
-    return res.data.data.items;
+    const res = await api.post('/cart/items', { productId, quantity, variant: {} });
+    return res.data.data;
   },
 };
 

@@ -9,7 +9,6 @@ import { socketService } from '../services/socketService';
 async function fetchGuestRecentlyViewed() {
   const local = await recentlyViewedStorage.getRecentlyViewed();
   if (!local.length) return [];
-
   const products = await Promise.all(
     local.map(async (item) => {
       try {
@@ -42,8 +41,6 @@ export function useRecentlyViewed() {
     return () => socket.off('recentlyViewedUpdated', handler);
   }, [user, queryClient]);
 
-  // Refetch canonical server state whenever the app returns to the foreground
-  // (covers the "no Socket.IO event arrived while backgrounded" case).
   useEffect(() => {
     if (!user) return undefined;
     const sub = AppState.addEventListener('change', (state) => {

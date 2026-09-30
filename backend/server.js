@@ -3,6 +3,7 @@ const http = require('http');
 const createApp = require('./app');
 const connectDB = require('./config/db');
 const { initSockets } = require('./sockets');
+const { startAbandonedCartJob } = require('./utils/abandonedCartJob');
 
 async function start() {
   await connectDB();
@@ -17,6 +18,8 @@ async function start() {
   server.listen(port, () => {
     console.log(`[server] Listening on http://localhost:${port}`);
   });
+
+  startAbandonedCartJob();
 }
 
 start().catch((err) => {

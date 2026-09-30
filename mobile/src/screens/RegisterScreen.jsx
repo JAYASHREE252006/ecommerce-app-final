@@ -29,13 +29,7 @@ export function RegisterScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create an account</Text>
-      <TextInput
-        placeholder="Name"
-        placeholderTextColor={colors.inkMuted}
-        value={name}
-        onChangeText={setName}
-        style={styles.input}
-      />
+      <TextInput placeholder="Name" placeholderTextColor={colors.inkMuted} value={name} onChangeText={setName} style={styles.input} />
       <TextInput
         placeholder="Email"
         placeholderTextColor={colors.inkMuted}
@@ -65,15 +59,7 @@ function createStyles(colors) {
   return StyleSheet.create({
     container: { flex: 1, padding: 24, justifyContent: 'center', backgroundColor: colors.canvas },
     title: { fontSize: 24, fontWeight: '700', marginBottom: 20, color: colors.ink },
-    input: {
-      borderWidth: 1,
-      borderColor: colors.line,
-      backgroundColor: colors.surface,
-      color: colors.ink,
-      borderRadius: 8,
-      padding: 12,
-      marginBottom: 12,
-    },
+    input: { borderWidth: 1, borderColor: colors.line, backgroundColor: colors.surface, color: colors.ink, borderRadius: 8, padding: 12, marginBottom: 12 },
     error: { color: colors.danger, marginBottom: 8 },
     button: { backgroundColor: colors.primary, borderRadius: 999, paddingVertical: 12, alignItems: 'center' },
     buttonText: { color: 'white', fontWeight: '600' },

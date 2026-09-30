@@ -18,7 +18,6 @@ export function ProductDetailsScreen({ route }) {
     queryFn: () => productService.get(productId),
   });
 
-  // Tracked asynchronously - never blocks this screen's render.
   useProductView(productId);
 
   if (isLoading) {
@@ -69,9 +68,7 @@ export function ProductDetailsScreen({ route }) {
           )}
         </View>
         <Text style={styles.description}>{product.description || 'No description available.'}</Text>
-        <Text style={styles.stock}>
-          {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
-        </Text>
+        <Text style={styles.stock}>{product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}</Text>
         <View style={styles.actions}>
           <Pressable onPress={addToCart} disabled={product.stock < 1} style={styles.cartBtn}>
             <Text style={styles.cartBtnText}>Add to cart</Text>

@@ -49,8 +49,7 @@ export function AuthProvider({ children }) {
   );
 
   const register = useCallback(
-    async (name, email, password) =>
-      afterAuthSuccess(await authService.register(name, email, password)),
+    async (name, email, password) => afterAuthSuccess(await authService.register(name, email, password)),
     [afterAuthSuccess]
   );
 
